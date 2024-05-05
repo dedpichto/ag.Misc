@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -216,41 +216,32 @@ namespace ShayX.Hotkeys
             };
         }
 
-        private static ushort loWord(uint l) => (ushort)(l & 0xffff);
+        //private static ushort loWord(uint l) => (ushort)(l & 0xffff);
 
-        private static ushort hiWord(uint l) => (ushort)(l >> 16);
+        //private static ushort hiWord(uint l) => (ushort)(l >> 16);
 
-        private static ushort makeWord(byte low, byte high) => (ushort)((high << 8) | low);
+        //private static ushort makeWord(byte low, byte high) => (ushort)((high << 8) | low);
 
         private static uint makeDWord(ushort low, ushort high) => (uint)(low << 16) | high;
 
         internal static uint BuildHotKey(string gesture)
         {
+            ushort modifiers = 0;
             ushort key = 0;
             var arr = gesture.Split('+');
-            var bytes = new List<byte>();
             foreach (var k in arr)
             {
                 if (k.In("Shift", "Ctrl", "Alt", "Win"))
                 {
-                    if (bytes.Count < 2)
-                    {
-                        bytes.Add(getModifier(k));
-                    }
+                    modifiers |= getModifier(k);
                 }
                 else
                 {
                     key = getKey(k);
                 }
             }
-            var modifiers = bytes.Count switch
-            {
-                0 => (ushort)0,
-                1 => makeWord(bytes[0], 0),
-                2 => makeWord(bytes[0], bytes[1]),
-                _ => makeWord(bytes[0], bytes[1])
-            };
-            var hotKey = makeDWord(modifiers, key);
+
+            var hotKey = makeDWord(key, modifiers);
             return hotKey;
         }
     }
