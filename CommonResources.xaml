@@ -56,6 +56,7 @@
         </GeometryDrawing>
     </DrawingImage.Drawing>
 </DrawingImage>
+<DrawingImage x:Shared="false" x:Key="driUsers">
             <DrawingImage.Drawing>
                 <GeometryDrawing>
                     <!--<GeometryDrawing.Pen>
