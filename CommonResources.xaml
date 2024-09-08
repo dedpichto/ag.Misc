@@ -1229,4 +1229,41 @@
                 </GeometryDrawing>
             </DrawingImage.Drawing>
         </DrawingImage>
+        <DrawingImage x:Shared="false" x:Key="driDealSplitHistory">
+            <DrawingImage.Drawing>
+                <GeometryDrawing>
+                    <!--<GeometryDrawing.Pen>
+                        <Pen Thickness="300" Brush="Black"/>
+                    </GeometryDrawing.Pen>-->
+                    <GeometryDrawing.Brush>
+                        <SolidColorBrush Color="Black"/>
+                    </GeometryDrawing.Brush>
+                    <GeometryDrawing.Geometry>
+                        <GeometryGroup FillRule="Nonzero">
+                            <GeometryGroup.Transform>
+                                <TransformGroup>
+                                    <RotateTransform Angle="180"/>
+                                    <ScaleTransform ScaleX="-1.0"/>
+                                </TransformGroup>
+                            </GeometryGroup.Transform>
+                            <PathGeometry Figures="M515 5106 c-101 -32 -195 -107 -248 -196 -61 -104 -57 24 -55 -2161
+l3 -1994 24 -58 c44 -111 155 -217 266 -255 46 -16 145 -17 1266 -20 l1217 -2
+58 -67 c151 -172 370 -295 601 -339 68 -13 122 -15 238 -11 195 7 298 34 462
+122 261 138 452 382 531 674 22 84 25 117 26 261 1 168 -4 207 -46 340 -49
+155 -178 357 -296 460 -119 106 -276 193 -419 232 l-83 23 0 1295 c0 783 -4
+1318 -10 1354 -25 157 -134 284 -288 337 -53 18 -109 19 -1631 18 -1244 0
+-1584 -3 -1616 -13z m3105 -1703 l0 -1288 -83 -23 c-143 -39 -300 -126 -419
+-232 -151 -133 -275 -351 -329 -580 -15 -59 -19 -332 -7 -387 l8 -33 -1075 0
+-1075 0 0 1915 0 1915 1490 0 1490 0 0 -1287z m380 -1943 l0 -240 240 0 240 0
+0 -155 0 -155 -400 0 -400 0 0 395 0 395 160 0 160 0 0 -240z
+M1060 4055 l0 -215 860 0 860 0 0 215 0 215 -860 0 -860 0 0 -215z
+M1060 3200 l0 -220 1070 0 1070 0 0 220 0 220 -1070 0 -1070 0 0
+-220z
+M1060 2345 l0 -215 860 0 860 0 0 215 0 215 -860 0 -860 0 0 -215z
+M1060 1495 l0 -215 645 0 645 0 0 215 0 215 -645 0 -645 0 0 -215z"/>
+                        </GeometryGroup>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingImage.Drawing>
+        </DrawingImage>
 </ResourceDictionary>
