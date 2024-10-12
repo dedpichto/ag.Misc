@@ -1480,4 +1480,41 @@
                 </GeometryDrawing>
             </DrawingImage.Drawing>
         </DrawingImage>
+<DrawingImage x:Shared="false" x:Key="driCancelFilter">
+    <DrawingImage.Drawing>
+        <GeometryDrawing>
+            <GeometryDrawing.Brush>
+                <SolidColorBrush Color="Black"/>
+            </GeometryDrawing.Brush>
+            <GeometryDrawing.Geometry>
+                <GeometryGroup FillRule="Nonzero">
+                    <GeometryGroup.Transform>
+                        <TransformGroup>
+                            <RotateTransform Angle="180"/>
+                            <ScaleTransform ScaleX="-1.0"/>
+                        </TransformGroup>
+                    </GeometryGroup.Transform>
+                    <PathGeometry Figures="M552 4780 c-18 -11 -41 -34 -52 -52 -19 -31 -20 -51 -20 -408 0 -354
+                        1 -377 20 -407 29 -48 66 -67 139 -73 l65 -5 528 -905 528 -905 0 -800 c0
+                        -781 1 -801 20 -833 30 -49 75 -72 142 -72 l58 0 510 340 c368 245 516 349
+                        530 373 18 28 20 50 20 189 l0 156 -66 31 c-36 17 -102 55 -147 84 -366 241
+                        -577 629 -577 1060 0 265 66 491 203 700 327 496 936 703 1493 506 70 -25 89
+                        -28 95 -17 5 7 19 31 32 53 22 39 24 40 88 45 73 6 110 25 139 73 19 30 20 53
+                        20 407 0 357 -1 377 -20 408 -11 18 -34 41 -52 52 -33 20 -55 20 -1848 20
+                        -1793 0 -1815 0 -1848 -20z
+                        M3290 3661 c-446 -99 -780 -433 -870 -871 -19 -90 -21 -128 -17 -265
+                        6 -183 23 -270 85 -413 135 -314 415 -553 752 -642 129 -34 369 -39 507 -11
+                        441 91 783 432 873 872 28 136 24 377 -8 505 -101 395 -421 715 -816 816 -119
+                        30 -388 35 -506 9z m-27 -642 c12 -6 75 -63 140 -127 l117 -117 118 117 c64
+                        64 127 121 139 127 61 31 155 1 193 -61 22 -37 27 -106 9 -141 -6 -12 -63 -75
+                        -127 -139 l-117 -118 117 -117 c64 -65 121 -128 127 -140 31 -61 1 -155 -61
+                        -193 -37 -22 -106 -27 -141 -9 -12 6 -75 63 -139 127 l-118 117 -117 -117
+                        c-65 -64 -128 -121 -140 -127 -35 -18 -104 -13 -141 9 -62 38 -92 132 -61 193
+                        6 12 63 75 127 140 l117 117 -117 118 c-64 64 -121 127 -127 139 -31 61 -1
+                        155 61 193 37 22 106 27 141 9z"/>
+                </GeometryGroup>
+            </GeometryDrawing.Geometry>
+        </GeometryDrawing>
+    </DrawingImage.Drawing>
+</DrawingImage>
 </ResourceDictionary>
