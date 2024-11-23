@@ -1,0 +1,34 @@
+<DataGridTemplateColumn>
+    <DataGridTemplateColumn.Header>
+        <Grid Width="200">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" TextAlignment="Center" Text="Mutual headr"/>
+            <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" TextAlignment="Center" Text="Country code"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" TextAlignment="Center" Text="Population"/>
+        </Grid>
+    </DataGridTemplateColumn.Header>
+    <DataGridTemplateColumn.CellTemplate>
+        <DataTemplate>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding CountryCode}"/>
+                <Border Grid.Column="1" VerticalAlignment="Stretch" Width="1" BorderThickness="1" BorderBrush="Black"/>
+                <!--<Separator Grid.ColumnSpan="1" VerticalAlignment="Stretch"/>-->
+                <TextBlock Grid.Column="2" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding Population}"/>
+            </Grid>
+        </DataTemplate>
+    </DataGridTemplateColumn.CellTemplate>
+</DataGridTemplateColumn>
