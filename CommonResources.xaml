@@ -1694,4 +1694,33 @@
         </GeometryDrawing>
     </DrawingImage.Drawing>
 </DrawingImage>
+<DrawingImage x:Shared="false" x:Key="driWarning">
+    <DrawingImage.Drawing>
+        <GeometryDrawing>
+            <GeometryDrawing.Brush>
+                <SolidColorBrush Color="Red"/>
+            </GeometryDrawing.Brush>
+            <GeometryDrawing.Geometry>
+                <GeometryGroup FillRule="Nonzero">
+                    <GeometryGroup.Transform>
+                        <TransformGroup>
+                            <RotateTransform Angle="180"/>
+                            <ScaleTransform ScaleX="-1.0"/>
+                        </TransformGroup>
+                    </GeometryGroup.Transform>
+                    <PathGeometry Figures="M2409 4816 c-150 -32 -270 -98 -384 -211 -79 -79 -96 -107 -995
+                        -1614 -503 -843 -932 -1567 -953 -1608 -55 -108 -77 -204 -77 -336 0 -131 17
+                        -210 70 -322 94 -202 262 -345 475 -407 l80 -23 1935 0 c2171 0 1980 -7 2145
+                        74 153 75 272 198 345 356 53 112 70 191 70 322 0 130 -22 227 -73 329 -72
+                        142 -1869 3139 -1914 3192 -92 107 -241 202 -378 238 -83 22 -264 27 -346 10z
+                        m282 -959 c73 -37 130 -104 151 -176 10 -36 13 -183 13 -696 0 -645 0 -650
+                        -22 -697 -112 -243 -434 -243 -546 0 -22 47 -22 52 -22 697 0 719 -1 705 64
+                        791 54 71 140 114 231 114 58 0 78 -5 131 -33z m45 -2106 c124 -58 201 -142
+                        245 -265 27 -78 27 -200 0 -277 -71 -206 -282 -337 -487 -302 -324 56 -481
+                        416 -300 689 40 60 100 111 173 148 76 38 117 46 215 42 72 -3 98 -9 154 -35z"/>
+                </GeometryGroup>
+            </GeometryDrawing.Geometry>
+        </GeometryDrawing>
+    </DrawingImage.Drawing>
+</DrawingImage>
 </ResourceDictionary>
