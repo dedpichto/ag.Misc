@@ -1723,4 +1723,53 @@
         </GeometryDrawing>
     </DrawingImage.Drawing>
 </DrawingImage>
+        <DrawingImage x:Shared="false" x:Key="driPageNext">
+            <DrawingImage.Drawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Brush>
+                        <SolidColorBrush Color="Black"/>
+                    </GeometryDrawing.Brush>
+                    <GeometryDrawing.Geometry>
+                        <GeometryGroup FillRule="Nonzero">
+                            <GeometryGroup.Transform>
+                                <TransformGroup>
+                                    <RotateTransform Angle="180"/>
+                                    <ScaleTransform ScaleX="-1.0"/>
+                                </TransformGroup>
+                            </GeometryGroup.Transform>
+                            <PathGeometry Figures="M1832 4300 c-18 -11 -41 -34 -52 -52 -20 -33 -20 -54 -20 -1688 0
+-1634 0 -1655 20 -1688 29 -48 75 -72 138 -72 29 0 65 6 80 14 15 8 397 385
+849 838 734 736 823 828 833 866 25 97 71 45 -833 950 -452 453 -834 830 -849
+838 -40 21 -126 18 -166 -6z"/>
+                        </GeometryGroup>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Shared="false" x:Key="driPageLast">
+            <DrawingImage.Drawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Brush>
+                        <SolidColorBrush Color="Black"/>
+                    </GeometryDrawing.Brush>
+                    <GeometryDrawing.Geometry>
+                        <GeometryGroup FillRule="Nonzero">
+                            <GeometryGroup.Transform>
+                                <TransformGroup>
+                                    <RotateTransform Angle="180"/>
+                                    <ScaleTransform ScaleX="-1.0"/>
+                                </TransformGroup>
+                            </GeometryGroup.Transform>
+                            <PathGeometry Figures="M976 4920 c-42 -13 -90 -49 -117 -88 l-24 -36 -3 -2215 c-2 -1484 0
+-2228 7 -2251 12 -40 59 -93 105 -118 26 -14 68 -18 257 -20 145 -2 242 1 268
+8 52 14 109 63 132 115 18 38 19 134 19 2245 0 2111 -1 2207 -19 2245 -23 51
+-79 101 -128 114 -45 13 -455 13 -497 1z
+M2123 4605 c-32 -16 -61 -41 -79 -67 l-29 -41 0 -1937 0 -1936 28
+-42 c52 -80 173 -115 265 -77 46 19 1933 1901 1963 1957 26 50 26 146 0 196
+-30 56 -1917 1937 -1963 1957 -56 23 -126 19 -185 -10z"/>
+                        </GeometryGroup>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingImage.Drawing>
+        </DrawingImage>
 </ResourceDictionary>
