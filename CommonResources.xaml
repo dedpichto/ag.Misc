@@ -1772,4 +1772,38 @@ M2123 4605 c-32 -16 -61 -41 -79 -67 l-29 -41 0 -1937 0 -1936 28
                 </GeometryDrawing>
             </DrawingImage.Drawing>
         </DrawingImage>
+
+<DrawingImage x:Shared="false" x:Key="driIdCard">
+    <DrawingImage.Drawing>
+        <GeometryDrawing>
+            <GeometryDrawing.Brush>
+                <SolidColorBrush Color="Black"/>
+            </GeometryDrawing.Brush>
+            <GeometryDrawing.Geometry>
+                <GeometryGroup FillRule="Nonzero">
+                    <GeometryGroup.Transform>
+                        <TransformGroup>
+                            <RotateTransform Angle="180"/>
+                            <ScaleTransform ScaleX="-1.0"/>
+                        </TransformGroup>
+                    </GeometryGroup.Transform>
+                    <PathGeometry Figures="M575 4291 c-218 -63 -381 -231 -436 -451 -21 -82 -21 -2478 0 -2560
+                    44 -178 167 -331 325 -408 136 -66 -12 -62 2096 -62 1705 0 1919 2 1973 16
+                    179 46 332 174 407 339 57 126 55 67 55 1405 0 1171 -1 1238 -18 1295 -51 165
+                    -167 308 -307 378 -146 72 16 67 -2115 66 -1791 0 -1924 -2 -1980 -18z m1190
+                    -763 c111 -28 237 -133 288 -241 81 -169 50 -357 -80 -497 -134 -146 -339
+                    -183 -518 -95 -281 137 -341 502 -119 719 115 113 268 154 429 114z m2533
+                    -451 c37 -20 69 -67 78 -114 9 -47 -30 -121 -76 -145 -33 -17 -78 -18 -756
+                    -18 l-721 0 -33 23 c-52 35 -73 70 -73 120 0 73 46 130 118 148 17 4 345 7
+                    730 6 653 -2 702 -3 733 -20z m-768 -609 c62 -32 85 -68 85 -131 0 -38 -6 -61
+                    -22 -83 -45 -62 -55 -64 -428 -64 -360 0 -364 0 -413 52 -48 52 -48 131 0 191
+                    43 52 74 56 418 57 308 0 317 -1 360 -22z m-1645 -17 c98 -26 228 -87 310
+                    -146 89 -63 213 -199 265 -290 60 -106 113 -258 107 -307 -6 -48 -38 -91 -81
+                    -112 -30 -14 -117 -16 -835 -16 -876 0 -847 -2 -890 58 -33 47 -35 81 -11 163
+                    66 222 221 423 420 543 83 51 236 109 330 125 89 16 293 6 385 -18z"/>
+                </GeometryGroup>
+            </GeometryDrawing.Geometry>
+        </GeometryDrawing>
+    </DrawingImage.Drawing>
+</DrawingImage>
 </ResourceDictionary>
