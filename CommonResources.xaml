@@ -1832,4 +1832,95 @@ M2123 4605 c-32 -16 -61 -41 -79 -67 l-29 -41 0 -1937 0 -1936 28
         </GeometryDrawing>
     </DrawingImage.Drawing>
 </DrawingImage>
+        <DrawingImage x:Shared="false" x:Key="driDelete">
+            <DrawingImage.Drawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Brush>
+                        <SolidColorBrush Color="Black"/>
+                    </GeometryDrawing.Brush>
+                    <GeometryDrawing.Geometry>
+                        <GeometryGroup FillRule="Nonzero">
+                            <GeometryGroup.Transform>
+                                <TransformGroup>
+                                    <RotateTransform Angle="180"/>
+                                    <ScaleTransform ScaleX="-1.0"/>
+                                </TransformGroup>
+                            </GeometryGroup.Transform>
+                            <PathGeometry Figures="M425 5101 c-196 -56 -359 -222 -409 -417 -21 -80 -21 -228 0 -308 9
+                                -33 32 -92 52 -131 32 -64 103 -138 841 -877 l806 -808 -806 -807 c-738 -740
+                                -809 -814 -841 -878 -49 -95 -68 -175 -68 -285 0 -169 55 -304 170 -420 116
+                                -115 251 -170 420 -170 110 0 190 19 285 68 64 32 138 103 877 841 l808 806
+                                808 -806 c739 -738 813 -809 877 -841 95 -49 175 -68 285 -68 169 0 304 55
+                                420 170 115 116 170 251 170 420 0 110 -19 190 -68 285 -32 64 -103 138 -841
+                                878 l-806 807 806 808 c738 739 809 813 841 877 49 95 68 175 68 285 0 169
+                                -55 304 -170 420 -116 115 -251 170 -420 170 -110 0 -190 -19 -285 -68 -64
+                                -32 -138 -103 -878 -841 l-807 -806 -808 806 c-739 738 -813 809 -877 841 -38
+                                20 -98 43 -131 52 -83 21 -240 20 -319 -3z"/>
+                        </GeometryGroup>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Shared="false" x:Key="driDeleteSmall">
+            <DrawingImage.Drawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Brush>
+                        <SolidColorBrush Color="Black"/>
+                    </GeometryDrawing.Brush>
+                    <GeometryDrawing.Geometry>
+                        <GeometryGroup FillRule="Nonzero">
+                            <GeometryGroup.Transform>
+                                <TransformGroup>
+                                    <RotateTransform Angle="180"/>
+                                    <ScaleTransform ScaleX="-1.0"/>
+                                </TransformGroup>
+                            </GeometryGroup.Transform>
+                            <PathGeometry Figures="M1309 4035 c-197 -63 -293 -288 -205 -481 24 -52 84 -116 494 -526
+                                l467 -468 -467 -468 c-538 -538 -523 -519 -523 -677 0 -76 4 -99 26 -146 34
+                                -72 96 -134 168 -168 47 -22 70 -26 146 -26 158 0 139 -15 678 523 l467 467
+                                468 -467 c538 -538 519 -523 677 -523 76 0 99 4 146 26 72 34 134 96 168 168
+                                22 47 26 70 26 146 0 158 15 139 -523 678 l-467 467 467 468 c538 538 523 519
+                                523 677 0 76 -4 99 -26 146 -34 72 -96 134 -168 168 -47 22 -70 26 -146 26
+                                -158 0 -139 15 -677 -523 l-468 -467 -467 467 c-414 413 -475 470 -528 494
+                                -73 34 -185 42 -256 19z"/>
+                        </GeometryGroup>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Shared="false" x:Key="driRefresh">
+            <DrawingImage.Drawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Brush>
+                        <SolidColorBrush Color="Black"/>
+                    </GeometryDrawing.Brush>
+                    <GeometryDrawing.Geometry>
+                        <GeometryGroup FillRule="Nonzero">
+                            <GeometryGroup.Transform>
+                                <TransformGroup>
+                                    <RotateTransform Angle="180"/>
+                                    <ScaleTransform ScaleX="-1.0"/>
+                                </TransformGroup>
+                            </GeometryGroup.Transform>
+                            <PathGeometry Figures="M2400 4724 c-196 -18 -423 -66 -580 -124 -121 -43 -350 -159 -450
+                                -225 -260 -174 -502 -424 -663 -685 -58 -94 -146 -279 -187 -390 -73 -198
+                                -117 -435 -127 -682 l-6 -148 -139 0 c-153 0 -190 -9 -226 -55 -16 -20 -22
+                                -42 -22 -80 0 -45 5 -57 37 -96 213 -250 729 -834 738 -834 21 0 759 852 773
+                                892 16 47 2 100 -38 138 l-31 30 -187 5 -187 5 2 115 c8 571 368 1096 904
+                                1317 182 76 341 107 549 107 343 0 645 -107 913 -323 48 -39 89 -71 91 -71 8
+                                0 456 530 456 539 0 5 -42 43 -92 84 -305 246 -663 404 -1048 462 -104 15
+                                -393 27 -480 19z
+                                M3960 3090 c-232 -266 -380 -444 -388 -466 -23 -66 12 -137 81 -163
+                                16 -6 101 -11 193 -11 l164 0 0 -24 c0 -43 -29 -190 -55 -281 -27 -94 -104
+                                -265 -158 -350 -187 -298 -486 -529 -817 -629 -265 -80 -559 -82 -825 -5 -143
+                                42 -325 130 -434 211 -52 39 -54 40 -72 22 -10 -11 -115 -131 -233 -269 l-215
+                                -250 36 -32 c56 -51 199 -142 318 -205 322 -167 633 -242 1005 -242 217 0 347
+                                15 540 64 763 192 1372 805 1564 1575 25 99 53 277 58 365 l3 45 155 5 c96 3
+                                163 10 177 17 43 25 63 63 63 119 0 53 0 54 -102 171 -437 503 -662 758 -672
+                                761 -6 1 -180 -192 -386 -428z"/>
+                        </GeometryGroup>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingImage.Drawing>
+        </DrawingImage>
 </ResourceDictionary>
