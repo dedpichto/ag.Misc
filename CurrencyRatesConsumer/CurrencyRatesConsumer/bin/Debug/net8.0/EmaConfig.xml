@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<EmaConfig>
+  <ConsumerGroup>
+    <DefaultConsumer value="Consumer_1"/>
+    <ConsumerList>
+      <Consumer>
+        <Name value="Consumer_1"/>
+        <ChannelSet value="Channel_1"/>
+        <Dictionary value="Dictionary_1"/>
+        <Logger value="Logger_1"/>
+        <XmlTraceToStdout value="0"/>
+      </Consumer>
+    </ConsumerList>
+  </ConsumerGroup>
+
+  <ChannelGroup>
+    <ChannelList>
+      <Channel>
+        <Name value="Channel_1"/>
+        <ChannelType value="ChannelType::RSSL_SOCKET"/>
+        <CompressionType value="CompressionType::None"/>
+        <GuaranteedOutputBuffers value="5000"/>
+        <Host value="localhost"/>
+        <Port value="14002"/>
+      </Channel>
+    </ChannelList>
+  </ChannelGroup>
+
+  <DictionaryGroup>
+    <DictionaryList>
+      <Dictionary>
+        <Name value="Dictionary_1"/>
+        <DictionaryType value="DictionaryType::FileDictionary"/>
+        <RdmFieldDictionaryFileName value="./RDMFieldDictionary"/>
+        <EnumTypeDefFileName value="./enumtype.def"/>
+      </Dictionary>
+    </DictionaryList>
+  </DictionaryGroup>
+
+  <LoggerGroup>
+    <LoggerList>
+      <Logger>
+        <Name value="Logger_1"/>
+        <LoggerType value="LoggerType::Stdout"/>
+        <LoggerSeverity value="LoggerSeverity::Success"/>
+      </Logger>
+    </LoggerList>
+  </LoggerGroup>
+</EmaConfig>
+<!--<EmaConfig>
+  <ConsumerGroup>
+    <DefaultConsumer value="Consumer_1"/>
+    <ConsumerList>
+      <Consumer>
+        <Name value="Consumer_1"/>
+        <Channel value="Channel_1"/>
+        <Dictionary value="Dictionary_1"/>
+      </Consumer>
+    </ConsumerList>
+  </ConsumerGroup>
+
+  <ChannelGroup>
+    <ChannelList>
+      <Channel>
+        <Name value="Channel_1"/>
+        <ChannelType value="ChannelType::RSSL_SOCKET"/>
+        <Host value="localhost"/>
+        <Port value="14002"/>
+      </Channel>
+    </ChannelList>
+  </ChannelGroup>
+
+  <DictionaryGroup>
+    <DictionaryList>
+      <Dictionary>
+        <Name value="Dictionary_1"/>
+        <DictionaryType value="DictionaryType::FileDictionary"/>
+        <RdmFieldDictionaryFileName value="./RDMFieldDictionary"/>
+        <EnumTypeDefFileName value="./enumtype.def"/>
+      </Dictionary>
+    </DictionaryList>
+  </DictionaryGroup>
+
+  <Consumer>
+    <Name value="Consumer_1"/>
+    <Channel value="Channel_1"/>
+    <Dictionary value="Dictionary_1"/>
+    <DictionaryRequestTimeOut value="45000"/>
+    <DirectoryRequestTimeOut value="45000"/>
+    <LoginRequestTimeOut value="45000"/>
+    <ReconnectAttemptLimit value="-1"/>
+    <ReconnectMinDelay value="1000"/>
+    <ReconnectMaxDelay value="5000"/>
+    <XmlTraceToStdout value="0"/>
+    --><!-- DACS Username goes here --><!--
+    <UserName value="your-dacs-username"/>
+  </Consumer>
+</EmaConfig>-->
