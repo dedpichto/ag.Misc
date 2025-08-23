@@ -7,20 +7,45 @@ class CrystalReportsDiscovery
 {
     static void Main()
     {
-        Console.WriteLine("=== Crystal Reports COM Object Discovery ===\n");
+        /Console.WriteLine("=== Crystal Reports COM Object Discovery ===\n");
 
-        // 1. Find all Crystal-related ProgIDs
-        FindCrystalProgIDs();
+        //// 1. Find all Crystal-related ProgIDs
+        //FindCrystalProgIDs();
 
-        Console.WriteLine("\n" + new string('=', 50) + "\n");
+        //Console.WriteLine("\n" + new string('=', 50) + "\n");
 
-        // 2. Test common Crystal Reports ProgIDs
-        TestCommonProgIDs();
+        //// 2. Test common Crystal Reports ProgIDs
+        //TestCommonProgIDs();
 
-        Console.WriteLine("\n" + new string('=', 50) + "\n");
+        //Console.WriteLine("\n" + new string('=', 50) + "\n");
 
-        // 3. Check for Crystal Reports installations
-        CheckCrystalInstallations();
+        //// 3. Check for Crystal Reports installations
+        //CheckCrystalInstallations();
+
+        string[] cr10ProgIDs = {
+    "CrystalRuntime.Application.10",
+    "CrystalRuntime.Application",
+    "Crystal.CRPE.Application.10",
+    "Crystal.CRPE.Application",
+    "Crystal.CrystalReport.10",
+    "Crystal.CrystalReport"
+};
+
+        dynamic crApp = null;
+        foreach (var progId in cr10ProgIDs)
+        {
+            try
+            {
+                Console.WriteLine($"Trying: {progId}");
+                crApp = Activator.CreateInstance(Type.GetTypeFromProgID(progId));
+                Console.WriteLine($"✓ Success with: {progId}");
+                break;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"✗ Failed: {ex.Message}");
+            }
+        }
 
         Console.ReadLine();
     }
@@ -221,4 +246,5 @@ class CrystalReportsDiscovery
             // Key doesn't exist or access denied
         }
     }
+
 }
