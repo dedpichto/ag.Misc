@@ -1,250 +1,324 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
+using System.IO;
 using System.Linq;
 using Microsoft.Win32;
 
-class CrystalReportsDiscovery
+class FindCrystalFiles
 {
     static void Main()
     {
-        /Console.WriteLine("=== Crystal Reports COM Object Discovery ===\n");
-
-        //// 1. Find all Crystal-related ProgIDs
-        //FindCrystalProgIDs();
-
-        //Console.WriteLine("\n" + new string('=', 50) + "\n");
-
-        //// 2. Test common Crystal Reports ProgIDs
-        //TestCommonProgIDs();
-
-        //Console.WriteLine("\n" + new string('=', 50) + "\n");
-
-        //// 3. Check for Crystal Reports installations
-        //CheckCrystalInstallations();
-
-        string[] cr10ProgIDs = {
-    "CrystalRuntime.Application.10",
-    "CrystalRuntime.Application",
-    "Crystal.CRPE.Application.10",
-    "Crystal.CRPE.Application",
-    "Crystal.CrystalReport.10",
-    "Crystal.CrystalReport"
-};
-
-        dynamic crApp = null;
-        foreach (var progId in cr10ProgIDs)
-        {
-            try
-            {
-                Console.WriteLine($"Trying: {progId}");
-                crApp = Activator.CreateInstance(Type.GetTypeFromProgID(progId));
-                Console.WriteLine($"✓ Success with: {progId}");
-                break;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"✗ Failed: {ex.Message}");
-            }
-        }
-
+        Console.WriteLine("=== Crystal Reports File Location Detective ===\n");
+        
+        // 1. Search entire system for Crystal Reports files
+        SearchForCrystalFiles();
+        
+        Console.WriteLine("\n" + new string('=', 50) + "\n");
+        
+        // 2. Check what the registry thinks the files should be
+        CheckRegistryPaths();
+        
+        Console.WriteLine("\n" + new string('=', 50) + "\n");
+        
+        // 3. Look in common installation directories
+        CheckCommonLocations();
+        
+        Console.WriteLine("\n" + new string('=', 50) + "\n");
+        
+        // 4. Check GAC for .NET assemblies
+        CheckGAC();
+        
         Console.ReadLine();
     }
-
-    static void FindCrystalProgIDs()
+    
+    static void SearchForCrystalFiles()
     {
-        Console.WriteLine("1. Scanning registry for Crystal-related ProgIDs...\n");
-
-        try
-        {
-            using (var classesRoot = Registry.ClassesRoot)
-            {
-                var crystalKeys = classesRoot.GetSubKeyNames()
-                    .Where(name => name.ToLower().Contains("crystal") ||
-                                  name.ToLower().Contains("crpe") ||
-                                  name.ToLower().Contains("sap") ||
-                                  name.ToLower().Contains("businessobjects"))
-                    .OrderBy(x => x)
-                    .ToList();
-
-                if (crystalKeys.Any())
-                {
-                    foreach (var key in crystalKeys)
-                    {
-                        Console.WriteLine($"Found ProgID: {key}");
-
-                        // Try to get CLSID
-                        try
-                        {
-                            using (var clsidKey = classesRoot.OpenSubKey(key + "\\CLSID"))
-                            {
-                                if (clsidKey != null)
-                                {
-                                    string clsid = clsidKey.GetValue(null)?.ToString();
-                                    Console.WriteLine($"  CLSID: {clsid}");
-
-                                    // Test if we can get the type
-                                    var type = Type.GetTypeFromProgID(key);
-                                    if (type != null)
-                                    {
-                                        Console.WriteLine($"  Type: {type.FullName}");
-                                        Console.WriteLine($"  Is COM Object: {type.IsCOMObject}");
-                                    }
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"  Error getting CLSID: {ex.Message}");
-                        }
-
-                        Console.WriteLine();
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("No Crystal Reports ProgIDs found in registry.");
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error scanning registry: {ex.Message}");
-        }
-    }
-
-    static void TestCommonProgIDs()
-    {
-        Console.WriteLine("2. Testing common Crystal Reports ProgIDs...\n");
-
-        string[] commonProgIDs = {
-            "Crystal.CRPE.Application",
-            "CrystalRuntime.Application",
-            "CrystalRuntime.Application.11",
-            "CrystalRuntime.Application.12",
-            "CrystalRuntime.Application.13",
-            "Crystal.CrystalReport",
-            "Crystal.CrystalReport.11",
-            "Crystal.CrystalReport.12",
-            "Crystal.CrystalReport.13",
-            "Crystal.Application",
-            "SAP.CrystalReports.Engine",
-            "CrystalDecisions.CrystalReports.Engine"
+        Console.WriteLine("1. Searching for Crystal Reports files on entire system...\n");
+        
+        string[] filesToFind = {
+            "crpe32.dll",
+            "craxdrt.dll", 
+            "crqe32.dll",
+            "CrystalDecisions.CrystalReports.Engine.dll",
+            "CrystalDecisions.Shared.dll",
+            "CrystalDecisions.Windows.Forms.dll"
         };
-
-        foreach (var progId in commonProgIDs)
+        
+        string[] searchPaths = {
+            @"C:\Windows\System32",
+            @"C:\Windows\SysWOW64", 
+            @"C:\Program Files",
+            @"C:\Program Files (x86)",
+            @"C:\Windows\Microsoft.NET\Framework",
+            @"C:\Windows\Microsoft.NET\Framework64",
+            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
+        };
+        
+        foreach (string fileName in filesToFind)
         {
-            Console.Write($"Testing {progId}... ");
-
-            try
+            Console.WriteLine($"Searching for: {fileName}");
+            bool found = false;
+            
+            foreach (string searchPath in searchPaths)
             {
-                var type = Type.GetTypeFromProgID(progId);
-                if (type != null)
+                if (Directory.Exists(searchPath))
                 {
-                    Console.WriteLine("✓ Type found");
-
-                    // Try to create instance
                     try
                     {
-                        var instance = Activator.CreateInstance(type);
-                        Console.WriteLine($"  ✓ Instance created successfully!");
-
-                        // Clean up
-                        if (System.Runtime.InteropServices.Marshal.IsComObject(instance))
+                        var files = Directory.GetFiles(searchPath, fileName, SearchOption.AllDirectories);
+                        foreach (var file in files)
                         {
-                            System.Runtime.InteropServices.Marshal.ReleaseComObject(instance);
+                            Console.WriteLine($"  ✓ Found: {file}");
+                            
+                            // Get file info
+                            var fileInfo = new FileInfo(file);
+                            var versionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(file);
+                            
+                            Console.WriteLine($"    Size: {fileInfo.Length} bytes");
+                            Console.WriteLine($"    Modified: {fileInfo.LastWriteTime}");
+                            Console.WriteLine($"    Version: {versionInfo.FileVersion ?? "Unknown"}");
+                            Console.WriteLine($"    Description: {versionInfo.FileDescription ?? "Unknown"}");
+                            
+                            found = true;
                         }
                     }
-                    catch (Exception createEx)
+                    catch (Exception ex)
                     {
-                        Console.WriteLine($"  ✗ Instance creation failed: {createEx.Message}");
+                        // Skip directories we can't access
+                        if (ex is UnauthorizedAccessException == false)
+                        {
+                            Console.WriteLine($"  Error searching {searchPath}: {ex.Message}");
+                        }
                     }
                 }
-                else
-                {
-                    Console.WriteLine("✗ Type not found");
-                }
             }
-            catch (Exception ex)
+            
+            if (!found)
             {
-                Console.WriteLine($"✗ Error: {ex.Message}");
+                Console.WriteLine($"  ✗ Not found anywhere");
             }
+            Console.WriteLine();
         }
     }
-
-    static void CheckCrystalInstallations()
+    
+    static void CheckRegistryPaths()
     {
-        Console.WriteLine("3. Checking for Crystal Reports installations...\n");
-
-        // Check common installation paths
-        string[] paths = {
-            @"C:\Program Files\SAP BusinessObjects",
-            @"C:\Program Files (x86)\SAP BusinessObjects",
-            @"C:\Program Files\Common Files\Crystal Decisions",
-            @"C:\Program Files (x86)\Common Files\Crystal Decisions",
-            @"C:\Program Files\Microsoft Visual Studio*\Crystal Reports",
-            @"C:\Windows\System32\crpe32.dll",
-            @"C:\Windows\SysWOW64\crpe32.dll"
+        Console.WriteLine("2. Checking what paths are in the registry...\n");
+        
+        // Get CLSID for CrystalRuntime.Application
+        string clsid = GetCLSIDFromProgID("CrystalRuntime.Application");
+        if (!string.IsNullOrEmpty(clsid))
+        {
+            Console.WriteLine($"CrystalRuntime.Application CLSID: {clsid}");
+            CheckCLSIDPaths(clsid);
+        }
+        
+        // Check other Crystal ProgIDs
+        string[] progIds = {
+            "Crystal.CrystalReport",
+            "Crystal.CRPE.Application"
         };
-
-        foreach (var path in paths)
+        
+        foreach (var progId in progIds)
         {
-            if (System.IO.Directory.Exists(path) || System.IO.File.Exists(path))
+            string progClsid = GetCLSIDFromProgID(progId);
+            if (!string.IsNullOrEmpty(progClsid))
             {
-                Console.WriteLine($"✓ Found: {path}");
+                Console.WriteLine($"\n{progId} CLSID: {progClsid}");
+                CheckCLSIDPaths(progClsid);
             }
         }
-
-        // Check registry for installation info
-        try
-        {
-            CheckRegistryPath(@"HKEY_LOCAL_MACHINE\SOFTWARE\Crystal Decisions");
-            CheckRegistryPath(@"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Crystal Decisions");
-            CheckRegistryPath(@"HKEY_LOCAL_MACHINE\SOFTWARE\SAP BusinessObjects");
-            CheckRegistryPath(@"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\SAP BusinessObjects");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error checking registry installations: {ex.Message}");
-        }
     }
-
-    static void CheckRegistryPath(string path)
+    
+    static string GetCLSIDFromProgID(string progId)
     {
         try
         {
-            var parts = path.Split('\\');
-            var hive = parts[0] switch
+            using (var key = Registry.ClassesRoot.OpenSubKey($"{progId}\\CLSID"))
             {
-                "HKEY_LOCAL_MACHINE" => Registry.LocalMachine,
-                "HKEY_CURRENT_USER" => Registry.CurrentUser,
-                _ => Registry.LocalMachine
-            };
-
-            var keyPath = string.Join("\\", parts.Skip(1));
-
-            using (var key = hive.OpenSubKey(keyPath))
-            {
-                if (key != null)
-                {
-                    Console.WriteLine($"✓ Registry key found: {path}");
-
-                    // List subkeys
-                    var subkeys = key.GetSubKeyNames();
-                    foreach (var subkey in subkeys.Take(5)) // Show first 5
-                    {
-                        Console.WriteLine($"  - {subkey}");
-                    }
-                    if (subkeys.Length > 5)
-                    {
-                        Console.WriteLine($"  ... and {subkeys.Length - 5} more");
-                    }
-                }
+                return key?.GetValue(null)?.ToString();
             }
         }
         catch
         {
-            // Key doesn't exist or access denied
+            return null;
         }
     }
-
+    
+    static void CheckCLSIDPaths(string clsid)
+    {
+        try
+        {
+            using (var key = Registry.ClassesRoot.OpenSubKey($"CLSID\\{clsid}"))
+            {
+                if (key == null)
+                {
+                    Console.WriteLine("  ✗ CLSID not found in registry");
+                    return;
+                }
+                
+                // Check InprocServer32
+                using (var inprocKey = key.OpenSubKey("InprocServer32"))
+                {
+                    if (inprocKey != null)
+                    {
+                        string dllPath = inprocKey.GetValue(null)?.ToString();
+                        Console.WriteLine($"  InprocServer32: {dllPath}");
+                        
+                        if (!string.IsNullOrEmpty(dllPath))
+                        {
+                            bool exists = File.Exists(dllPath);
+                            Console.WriteLine($"  File exists: {(exists ? "✓ YES" : "✗ NO")}");
+                            
+                            if (!exists)
+                            {
+                                // Try to find the file elsewhere
+                                string fileName = Path.GetFileName(dllPath);
+                                Console.WriteLine($"  Looking for {fileName} in other locations...");
+                                
+                                string[] searchDirs = {
+                                    @"C:\Windows\System32",
+                                    @"C:\Windows\SysWOW64",
+                                    Environment.GetFolderPath(Environment.SpecialFolder.System),
+                                    Environment.GetFolderPath(Environment.SpecialFolder.SystemX86)
+                                };
+                                
+                                foreach (var dir in searchDirs)
+                                {
+                                    string altPath = Path.Combine(dir, fileName);
+                                    if (File.Exists(altPath))
+                                    {
+                                        Console.WriteLine($"    ✓ Found alternative: {altPath}");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Check LocalServer32
+                using (var localKey = key.OpenSubKey("LocalServer32"))
+                {
+                    if (localKey != null)
+                    {
+                        string exePath = localKey.GetValue(null)?.ToString();
+                        Console.WriteLine($"  LocalServer32: {exePath}");
+                        
+                        if (!string.IsNullOrEmpty(exePath))
+                        {
+                            bool exists = File.Exists(exePath);
+                            Console.WriteLine($"  File exists: {(exists ? "✓ YES" : "✗ NO")}");
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  Error: {ex.Message}");
+        }
+    }
+    
+    static void CheckCommonLocations()
+    {
+        Console.WriteLine("3. Checking common Crystal Reports installation locations...\n");
+        
+        string[] commonPaths = {
+            @"C:\Program Files\SAP BusinessObjects",
+            @"C:\Program Files (x86)\SAP BusinessObjects",
+            @"C:\Program Files\Business Objects",
+            @"C:\Program Files (x86)\Business Objects",
+            @"C:\Program Files\Crystal Decisions",
+            @"C:\Program Files (x86)\Crystal Decisions",
+            @"C:\Program Files\Common Files\SAP BusinessObjects",
+            @"C:\Program Files (x86)\Common Files\SAP BusinessObjects",
+            @"C:\Program Files\Microsoft Visual Studio 8\Crystal Reports",
+            @"C:\Program Files (x86)\Microsoft Visual Studio 8\Crystal Reports",
+            @"C:\Program Files\Microsoft Visual Studio 9.0\Crystal Reports",
+            @"C:\Program Files (x86)\Microsoft Visual Studio 9.0\Crystal Reports",
+            @"C:\Program Files\Microsoft Visual Studio 10.0\Crystal Reports",
+            @"C:\Program Files (x86)\Microsoft Visual Studio 10.0\Crystal Reports"
+        };
+        
+        foreach (string path in commonPaths)
+        {
+            if (Directory.Exists(path))
+            {
+                Console.WriteLine($"✓ Found directory: {path}");
+                
+                try
+                {
+                    var subdirs = Directory.GetDirectories(path, "*", SearchOption.AllDirectories)
+                        .Where(d => d.ToLower().Contains("bin") || d.ToLower().Contains("crystal"))
+                        .Take(10);
+                    
+                    foreach (var subdir in subdirs)
+                    {
+                        Console.WriteLine($"  - {subdir}");
+                        
+                        // Look for DLLs in bin directories
+                        if (subdir.ToLower().Contains("bin"))
+                        {
+                            try
+                            {
+                                var dlls = Directory.GetFiles(subdir, "*.dll");
+                                var crystalDlls = dlls.Where(f => Path.GetFileName(f).ToLower().Contains("cr"));
+                                foreach (var dll in crystalDlls.Take(5))
+                                {
+                                    Console.WriteLine($"    📄 {Path.GetFileName(dll)}");
+                                }
+                            }
+                            catch { }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"  Error exploring: {ex.Message}");
+                }
+                
+                Console.WriteLine();
+            }
+        }
+    }
+    
+    static void CheckGAC()
+    {
+        Console.WriteLine("4. Checking Global Assembly Cache for Crystal Reports .NET assemblies...\n");
+        
+        try
+        {
+            string gacPath = @"C:\Windows\Microsoft.NET\assembly";
+            if (Directory.Exists(gacPath))
+            {
+                var crystalDirs = Directory.GetDirectories(gacPath, "*Crystal*", SearchOption.AllDirectories);
+                
+                foreach (var dir in crystalDirs)
+                {
+                    Console.WriteLine($"✓ Found in GAC: {dir}");
+                }
+                
+                if (crystalDirs.Length == 0)
+                {
+                    Console.WriteLine("✗ No Crystal Reports assemblies found in GAC");
+                }
+            }
+            
+            // Also check legacy GAC
+            string legacyGac = @"C:\Windows\assembly";
+            if (Directory.Exists(legacyGac))
+            {
+                var legacyCrystal = Directory.GetDirectories(legacyGac, "*Crystal*", SearchOption.TopDirectoryOnly);
+                
+                foreach (var dir in legacyCrystal)
+                {
+                    Console.WriteLine($"✓ Found in legacy GAC: {dir}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error checking GAC: {ex.Message}");
+        }
+    }
 }
