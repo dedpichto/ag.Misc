@@ -2,6 +2,7 @@ public static class TabManager
 {
     private static readonly Dictionary<FrameworkElement, string> _controlRegistry = new();
     
+    // Existing TabIndex properties...
     public static readonly DependencyProperty ControlNameProperty =
         DependencyProperty.RegisterAttached("ControlName", typeof(string), typeof(TabManager),
             new PropertyMetadata(OnControlNameChanged));
@@ -10,6 +11,7 @@ public static class TabManager
         DependencyProperty.RegisterAttached("TabManager", typeof(ITabManager), typeof(TabManager),
             new PropertyMetadata(OnTabManagerChanged));
     
+    // Setters and getters...
     public static void SetControlName(DependencyObject obj, string value)
         => obj.SetValue(ControlNameProperty, value);
     
@@ -27,7 +29,7 @@ public static class TabManager
         if (d is FrameworkElement element && e.NewValue is string controlName)
         {
             _controlRegistry[element] = controlName;
-            UpdateTabIndex(element);
+            UpdateTabProperties(element);
         }
     }
     
@@ -36,22 +38,33 @@ public static class TabManager
         if (d is FrameworkElement element)
         {
             if (e.OldValue is ITabManager oldManager)
-                oldManager.TabOrderChanged -= (s, args) => UpdateTabIndex(element);
+            {
+                oldManager.TabOrderChanged -= (s, args) => UpdateTabProperties(element);
+                oldManager.TabStopChanged -= (s, args) => UpdateTabProperties(element);
+            }
             
             if (e.NewValue is ITabManager newManager)
-                newManager.TabOrderChanged += (s, args) => UpdateTabIndex(element);
+            {
+                newManager.TabOrderChanged += (s, args) => UpdateTabProperties(element);
+                newManager.TabStopChanged += (s, args) => UpdateTabProperties(element);
+            }
         }
     }
     
-    private static void UpdateTabIndex(FrameworkElement element)
+    private static void UpdateTabProperties(FrameworkElement element)
     {
         if (_controlRegistry.TryGetValue(element, out string controlName))
         {
             var tabManager = GetTabManager(element);
             if (tabManager != null)
             {
+                // Update TabIndex
                 var tabIndex = tabManager.GetTabIndex(controlName);
                 element.SetCurrentValue(Control.TabIndexProperty, tabIndex);
+                
+                // Update IsTabStop
+                var isTabStop = tabManager.GetIsTabStop(controlName);
+                element.SetCurrentValue(Control.IsTabStopProperty, isTabStop);
             }
         }
     }
@@ -60,8 +73,15 @@ public static class TabManager
 public interface ITabManager
 {
     event EventHandler TabOrderChanged;
+    event EventHandler TabStopChanged;
+    
     int GetTabIndex(string controlName);
+    bool GetIsTabStop(string controlName);
+    
     void SetTabOrder(params string[] controlNames);
+    void SetTabStops(Dictionary<string, bool> tabStops);
+    void EnableTabStop(params string[] controlNames);
+    void DisableTabStop(params string[] controlNames);
 }
 
 
@@ -71,12 +91,36 @@ public interface ITabManager
 public class FormViewModel : INotifyPropertyChanged, ITabManager
 {
     private Dictionary<string, int> _tabIndices = new();
+    private Dictionary<string, bool> _tabStops = new();
     
     public event EventHandler TabOrderChanged;
+    public event EventHandler TabStopChanged;
+    
+    public FormViewModel()
+    {
+        InitializeDefaults();
+    }
+    
+    private void InitializeDefaults()
+    {
+        // Set default tab stops - most controls are tabbable by default
+        var allControls = new[] { "FirstName", "LastName", "Email", "Phone", "Address", "City", "State", "Zip", "Comments" };
+        foreach (var control in allControls)
+        {
+            _tabStops[control] = true;
+        }
+        
+        SetNormalTabOrder();
+    }
     
     public int GetTabIndex(string controlName)
     {
         return _tabIndices.TryGetValue(controlName, out int index) ? index : 0;
+    }
+    
+    public bool GetIsTabStop(string controlName)
+    {
+        return _tabStops.TryGetValue(controlName, out bool isTabStop) && isTabStop;
     }
     
     public void SetTabOrder(params string[] controlNames)
@@ -89,18 +133,61 @@ public class FormViewModel : INotifyPropertyChanged, ITabManager
         TabOrderChanged?.Invoke(this, EventArgs.Empty);
     }
     
-    // Example usage methods
-    public void SetNormalTabOrder()
+    public void SetTabStops(Dictionary<string, bool> tabStops)
     {
-        SetTabOrder("FirstName", "LastName", "Email", "Phone", "Address", "City", "State", "Zip");
+        foreach (var kvp in tabStops)
+        {
+            _tabStops[kvp.Key] = kvp.Value;
+        }
+        TabStopChanged?.Invoke(this, EventArgs.Empty);
     }
     
-    public void SetPriorityTabOrder()
+    public void EnableTabStop(params string[] controlNames)
     {
-        SetTabOrder("Email", "Phone", "FirstName", "LastName", "Address", "City", "State", "Zip");
+        foreach (var controlName in controlNames)
+        {
+            _tabStops[controlName] = true;
+        }
+        TabStopChanged?.Invoke(this, EventArgs.Empty);
+    }
+    
+    public void DisableTabStop(params string[] controlNames)
+    {
+        foreach (var controlName in controlNames)
+        {
+            _tabStops[controlName] = false;
+        }
+        TabStopChanged?.Invoke(this, EventArgs.Empty);
+    }
+    
+    // Convenience methods for common scenarios
+    public void SetNormalTabOrder()
+    {
+        SetTabOrder("FirstName", "LastName", "Email", "Phone", "Address", "City", "State", "Zip", "Comments");
+    }
+    
+    public void SetReadOnlyMode(bool isReadOnly)
+    {
+        if (isReadOnly)
+        {
+            // Disable tab stops for input fields, keep navigation elements
+            DisableTabStop("FirstName", "LastName", "Email", "Phone", "Address", "City", "State", "Zip", "Comments");
+            EnableTabStop("CloseButton", "PrintButton");
+        }
+        else
+        {
+            EnableTabStop("FirstName", "LastName", "Email", "Phone", "Address", "City", "State", "Zip", "Comments");
+        }
+    }
+    
+    public void SetQuickEntryMode()
+    {
+        // Only essential fields are tabbable
+        DisableTabStop("Address", "City", "State", "Zip", "Comments");
+        EnableTabStop("FirstName", "LastName", "Email", "Phone");
+        SetTabOrder("FirstName", "LastName", "Email", "Phone");
     }
 }
-
 
 ////////////////////////////////////////////////////
 
@@ -110,18 +197,34 @@ public class FormViewModel : INotifyPropertyChanged, ITabManager
         <TextBox local:TabManager.ControlName="FirstName" Text="{Binding FirstName}" />
         <TextBox local:TabManager.ControlName="LastName" Text="{Binding LastName}" />
         <TextBox local:TabManager.ControlName="Email" Text="{Binding Email}" />
-        <!-- ... all your other controls -->
+        <TextBox local:TabManager.ControlName="Phone" Text="{Binding Phone}" />
+        <!-- No need to bind IsTabStop - it's handled automatically -->
     </Grid>
 </UserControl>
 
 
 //////////////////////////////////////////////////////////////
 
-// Change tab order based on user preference
-viewModel.SetTabOrder("Email", "FirstName", "LastName", "Phone");
+// Scenario 1: Form in read-only mode
+viewModel.SetReadOnlyMode(true);
 
-// Conditional tab order based on form type
-if (isPersonalForm)
-    viewModel.SetNormalTabOrder();
+// Scenario 2: Quick data entry mode
+viewModel.SetQuickEntryMode();
+
+// Scenario 3: Conditional field availability
+if (isBusinessCustomer)
+{
+    viewModel.EnableTabStop("CompanyName", "TaxId");
+    viewModel.SetTabOrder("CompanyName", "TaxId", "FirstName", "LastName", "Email");
+}
 else
-    viewModel.SetBusinessTabOrder();
+{
+    viewModel.DisableTabStop("CompanyName", "TaxId");
+    viewModel.SetTabOrder("FirstName", "LastName", "Email", "Phone");
+}
+
+// Scenario 4: Dynamic form based on user permissions
+if (!user.CanEditPersonalInfo)
+{
+    viewModel.DisableTabStop("FirstName", "LastName", "Email");
+}
