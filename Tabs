@@ -1,1 +1,127 @@
+public static class TabManager
+{
+    private static readonly Dictionary<FrameworkElement, string> _controlRegistry = new();
+    
+    public static readonly DependencyProperty ControlNameProperty =
+        DependencyProperty.RegisterAttached("ControlName", typeof(string), typeof(TabManager),
+            new PropertyMetadata(OnControlNameChanged));
+    
+    public static readonly DependencyProperty TabManagerProperty =
+        DependencyProperty.RegisterAttached("TabManager", typeof(ITabManager), typeof(TabManager),
+            new PropertyMetadata(OnTabManagerChanged));
+    
+    public static void SetControlName(DependencyObject obj, string value)
+        => obj.SetValue(ControlNameProperty, value);
+    
+    public static string GetControlName(DependencyObject obj)
+        => (string)obj.GetValue(ControlNameProperty);
+    
+    public static void SetTabManager(DependencyObject obj, ITabManager value)
+        => obj.SetValue(TabManagerProperty, value);
+    
+    public static ITabManager GetTabManager(DependencyObject obj)
+        => (ITabManager)obj.GetValue(TabManagerProperty);
+    
+    private static void OnControlNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is FrameworkElement element && e.NewValue is string controlName)
+        {
+            _controlRegistry[element] = controlName;
+            UpdateTabIndex(element);
+        }
+    }
+    
+    private static void OnTabManagerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is FrameworkElement element)
+        {
+            if (e.OldValue is ITabManager oldManager)
+                oldManager.TabOrderChanged -= (s, args) => UpdateTabIndex(element);
+            
+            if (e.NewValue is ITabManager newManager)
+                newManager.TabOrderChanged += (s, args) => UpdateTabIndex(element);
+        }
+    }
+    
+    private static void UpdateTabIndex(FrameworkElement element)
+    {
+        if (_controlRegistry.TryGetValue(element, out string controlName))
+        {
+            var tabManager = GetTabManager(element);
+            if (tabManager != null)
+            {
+                var tabIndex = tabManager.GetTabIndex(controlName);
+                element.SetCurrentValue(Control.TabIndexProperty, tabIndex);
+            }
+        }
+    }
+}
 
+public interface ITabManager
+{
+    event EventHandler TabOrderChanged;
+    int GetTabIndex(string controlName);
+    void SetTabOrder(params string[] controlNames);
+}
+
+
+/////////////////////////////////////////////////
+
+
+public class FormViewModel : INotifyPropertyChanged, ITabManager
+{
+    private Dictionary<string, int> _tabIndices = new();
+    
+    public event EventHandler TabOrderChanged;
+    
+    public int GetTabIndex(string controlName)
+    {
+        return _tabIndices.TryGetValue(controlName, out int index) ? index : 0;
+    }
+    
+    public void SetTabOrder(params string[] controlNames)
+    {
+        _tabIndices.Clear();
+        for (int i = 0; i < controlNames.Length; i++)
+        {
+            _tabIndices[controlNames[i]] = i + 1;
+        }
+        TabOrderChanged?.Invoke(this, EventArgs.Empty);
+    }
+    
+    // Example usage methods
+    public void SetNormalTabOrder()
+    {
+        SetTabOrder("FirstName", "LastName", "Email", "Phone", "Address", "City", "State", "Zip");
+    }
+    
+    public void SetPriorityTabOrder()
+    {
+        SetTabOrder("Email", "Phone", "FirstName", "LastName", "Address", "City", "State", "Zip");
+    }
+}
+
+
+////////////////////////////////////////////////////
+
+
+<UserControl local:TabManager.TabManager="{Binding}">
+    <Grid>
+        <TextBox local:TabManager.ControlName="FirstName" Text="{Binding FirstName}" />
+        <TextBox local:TabManager.ControlName="LastName" Text="{Binding LastName}" />
+        <TextBox local:TabManager.ControlName="Email" Text="{Binding Email}" />
+        <!-- ... all your other controls -->
+    </Grid>
+</UserControl>
+
+
+//////////////////////////////////////////////////////////////
+
+// Change tab order based on user preference
+viewModel.SetTabOrder("Email", "FirstName", "LastName", "Phone");
+
+// Conditional tab order based on form type
+if (isPersonalForm)
+    viewModel.SetNormalTabOrder();
+else
+    viewModel.SetBusinessTabOrder();
