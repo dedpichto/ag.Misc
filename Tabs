@@ -2,7 +2,6 @@ public static class TabManager
 {
     private static readonly Dictionary<FrameworkElement, string> _controlRegistry = new();
     
-    // Existing TabIndex properties...
     public static readonly DependencyProperty ControlNameProperty =
         DependencyProperty.RegisterAttached("ControlName", typeof(string), typeof(TabManager),
             new PropertyMetadata(OnControlNameChanged));
@@ -11,7 +10,6 @@ public static class TabManager
         DependencyProperty.RegisterAttached("TabManager", typeof(ITabManager), typeof(TabManager),
             new PropertyMetadata(OnTabManagerChanged));
     
-    // Setters and getters...
     public static void SetControlName(DependencyObject obj, string value)
         => obj.SetValue(ControlNameProperty, value);
     
@@ -29,44 +27,108 @@ public static class TabManager
         if (d is FrameworkElement element && e.NewValue is string controlName)
         {
             _controlRegistry[element] = controlName;
-            UpdateTabProperties(element);
+            
+            // Try to find TabManager in the visual tree
+            var tabManager = FindTabManager(element);
+            if (tabManager != null)
+            {
+                UpdateTabProperties(element, tabManager, controlName);
+            }
+            else
+            {
+                // Wait for Loaded event to find TabManager
+                element.Loaded += OnElementLoaded;
+            }
+        }
+    }
+    
+    private static void OnElementLoaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement element)
+        {
+            element.Loaded -= OnElementLoaded;
+            
+            if (_controlRegistry.TryGetValue(element, out string controlName))
+            {
+                var tabManager = FindTabManager(element);
+                if (tabManager != null)
+                {
+                    UpdateTabProperties(element, tabManager, controlName);
+                }
+            }
         }
     }
     
     private static void OnTabManagerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (d is FrameworkElement element)
+        if (d is FrameworkElement container)
         {
             if (e.OldValue is ITabManager oldManager)
             {
-                oldManager.TabOrderChanged -= (s, args) => UpdateTabProperties(element);
-                oldManager.TabStopChanged -= (s, args) => UpdateTabProperties(element);
+                oldManager.TabOrderChanged -= (s, args) => OnTabManagerPropertiesChanged(container);
+                oldManager.TabStopChanged -= (s, args) => OnTabManagerPropertiesChanged(container);
             }
             
             if (e.NewValue is ITabManager newManager)
             {
-                newManager.TabOrderChanged += (s, args) => UpdateTabProperties(element);
-                newManager.TabStopChanged += (s, args) => UpdateTabProperties(element);
+                newManager.TabOrderChanged += (s, args) => OnTabManagerPropertiesChanged(container);
+                newManager.TabStopChanged += (s, args) => OnTabManagerPropertiesChanged(container);
+                
+                // Update all child controls that have ControlName set
+                UpdateAllChildControls(container, newManager);
             }
         }
     }
     
-    private static void UpdateTabProperties(FrameworkElement element)
+    private static void OnTabManagerPropertiesChanged(FrameworkElement container)
     {
-        if (_controlRegistry.TryGetValue(element, out string controlName))
+        var tabManager = GetTabManager(container);
+        if (tabManager != null)
         {
-            var tabManager = GetTabManager(element);
-            if (tabManager != null)
-            {
-                // Update TabIndex
-                var tabIndex = tabManager.GetTabIndex(controlName);
-                element.SetCurrentValue(Control.TabIndexProperty, tabIndex);
-                
-                // Update IsTabStop
-                var isTabStop = tabManager.GetIsTabStop(controlName);
-                element.SetCurrentValue(Control.IsTabStopProperty, isTabStop);
-            }
+            UpdateAllChildControls(container, tabManager);
         }
+    }
+    
+    private static void UpdateAllChildControls(DependencyObject parent, ITabManager tabManager)
+    {
+        int childCount = VisualTreeHelper.GetChildrenCount(parent);
+        for (int i = 0; i < childCount; i++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, i);
+            
+            if (child is FrameworkElement element && _controlRegistry.TryGetValue(element, out string controlName))
+            {
+                UpdateTabProperties(element, tabManager, controlName);
+            }
+            
+            // Recursively process children
+            UpdateAllChildControls(child, tabManager);
+        }
+    }
+    
+    private static ITabManager FindTabManager(DependencyObject element)
+    {
+        DependencyObject current = element;
+        while (current != null)
+        {
+            var tabManager = GetTabManager(current);
+            if (tabManager != null)
+                return tabManager;
+            
+            current = VisualTreeHelper.GetParent(current);
+        }
+        return null;
+    }
+    
+    private static void UpdateTabProperties(FrameworkElement element, ITabManager tabManager, string controlName)
+    {
+        // Update TabIndex
+        var tabIndex = tabManager.GetTabIndex(controlName);
+        element.SetCurrentValue(Control.TabIndexProperty, tabIndex);
+        
+        // Update IsTabStop
+        var isTabStop = tabManager.GetIsTabStop(controlName);
+        element.SetCurrentValue(Control.IsTabStopProperty, isTabStop);
     }
 }
 
