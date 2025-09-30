@@ -128,7 +128,8 @@ public static class TabManager
         
         // Update IsTabStop
         var isTabStop = tabManager.GetIsTabStop(controlName);
-        element.SetCurrentValue(Control.IsTabStopProperty, isTabStop);
+        if(isTabStop.HasValue)
+            element.SetCurrentValue(Control.IsTabStopProperty, isTabStop.Value);
     }
 }
 
@@ -138,7 +139,7 @@ public interface ITabManager
     event EventHandler TabStopChanged;
     
     int GetTabIndex(string controlName);
-    bool GetIsTabStop(string controlName);
+    bool? GetIsTabStop(string controlName);
     
     void SetTabOrder(params string[] controlNames);
     void SetTabStops(Dictionary<string, bool> tabStops);
@@ -182,7 +183,7 @@ public class FormViewModel : INotifyPropertyChanged, ITabManager
     
     public bool GetIsTabStop(string controlName)
     {
-        return _tabStops.TryGetValue(controlName, out bool isTabStop) && isTabStop;
+        return _tabStops.TryGetValue(controlName, out var isTabStop) ? isTabStop : (bool?)null;
     }
     
     public void SetTabOrder(params string[] controlNames)
