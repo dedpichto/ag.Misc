@@ -59,4 +59,52 @@ public static class TreeViewItemBehavior
             markHandled();
         }
     }
+
+    ////////////////////////////////////////////////////
+
+    
+}
+
+public static class TreeViewBehavior
+{
+    public static readonly DependencyProperty SelectedItemProperty =
+        DependencyProperty.RegisterAttached(
+            "SelectedItem",
+            typeof(object),
+            typeof(TreeViewBehavior),
+            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectedItemChanged));
+
+    public static object GetSelectedItem(DependencyObject obj) => obj.GetValue(SelectedItemProperty);
+    public static void SetSelectedItem(DependencyObject obj, object value) => obj.SetValue(SelectedItemProperty, value);
+
+    private static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is not TreeView treeView)
+            return;
+
+        treeView.SelectedItemChanged -= TreeView_SelectedItemChanged;
+        treeView.SelectedItemChanged += TreeView_SelectedItemChanged;
+
+        if (e.NewValue != null)
+        {
+            // Parents are root items, so container lookup is straightforward
+            treeView.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
+            {
+                var container = treeView.ItemContainerGenerator
+                    .ContainerFromItem(e.NewValue) as TreeViewItem;
+                
+                if (container != null)
+                {
+                    container.IsSelected = true;
+                    container.BringIntoView();
+                }
+            });
+        }
+    }
+
+    private static void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+    {
+        if (sender is TreeView treeView)
+            SetSelectedItem(treeView, e.NewValue);
+    }
 }
