@@ -82,23 +82,34 @@ public static class TreeViewBehavior
         if (d is not TreeView treeView)
             return;
 
+        // First time: subscribe to events
+        treeView.Loaded -= TreeView_Loaded;
+        treeView.Loaded += TreeView_Loaded;
+        treeView.IsVisibleChanged -= TreeView_IsVisibleChanged;
+        treeView.IsVisibleChanged += TreeView_IsVisibleChanged;
         treeView.SelectedItemChanged -= TreeView_SelectedItemChanged;
         treeView.SelectedItemChanged += TreeView_SelectedItemChanged;
 
-        if (e.NewValue != null)
+        // Only sync if already loaded and visible
+        if (treeView.IsLoaded && treeView.IsVisible)
         {
-            // Parents are root items, so container lookup is straightforward
-            treeView.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
-            {
-                var container = treeView.ItemContainerGenerator
-                    .ContainerFromItem(e.NewValue) as TreeViewItem;
-                
-                if (container != null)
-                {
-                    container.IsSelected = true;
-                    container.BringIntoView();
-                }
-            });
+            SyncSelection(treeView, e.NewValue);
+        }
+    }
+
+    private static void TreeView_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is TreeView treeView && treeView.IsVisible)
+        {
+            SyncSelection(treeView, GetSelectedItem(treeView));
+        }
+    }
+
+    private static void TreeView_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        if (sender is TreeView treeView && (bool)e.NewValue && treeView.IsLoaded)
+        {
+            SyncSelection(treeView, GetSelectedItem(treeView));
         }
     }
 
@@ -106,5 +117,23 @@ public static class TreeViewBehavior
     {
         if (sender is TreeView treeView)
             SetSelectedItem(treeView, e.NewValue);
+    }
+
+    private static void SyncSelection(TreeView treeView, object item)
+    {
+        if (item == null || treeView.ItemsSource == null)
+            return;
+
+        treeView.Dispatcher.InvokeAsync(() =>
+        {
+            var container = treeView.ItemContainerGenerator
+                .ContainerFromItem(item) as TreeViewItem;
+
+            if (container != null)
+            {
+                container.IsSelected = true;
+                container.BringIntoView();
+            }
+        }, DispatcherPriority.Loaded);
     }
 }
