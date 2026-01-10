@@ -11,6 +11,18 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 
+public class PdfColumn
+{
+    public string PropertyName { get; set; }
+    public string Header { get; set; }
+    public double WidthInPoints { get; set; }
+    public TextAlignment Alignment { get; set; }
+    public string FormatString { get; set; }
+    public Func<object, SolidColorBrush> CellBackgroundFunc { get; set; }
+    public Func<object, SolidColorBrush> CellForegoundFunc { get; set; }
+}
+
+
 var sfd = new Microsoft.Win32.SaveFileDialog
 {
     Filter = "PDF File|*.pdf",
@@ -18,15 +30,15 @@ var sfd = new Microsoft.Win32.SaveFileDialog
 };
 if (sfd.ShowDialog() == true)
 {
-    var columns = new List<(string, string, double, TextAlignment, string, Func<object, SolidColorBrush>, Func<object, SolidColorBrush>)>
-    {
-        ("ID", "Id", 50, TextAlignment.Left,null, null, (o)=>Brushes.Blue),
-        ("Name", "Name", 150, TextAlignment.Left,null, cellBackground, cellForeround),
-        ("CountryCode", "Country code", 100, TextAlignment.Left,null, null, null),
-        ("Population","Population", 100, TextAlignment.Right,"N0", null, null),
-        ("District", "District", 150, TextAlignment.Left,null, null, null)
-    };
-    if (ExportToPdfManual(Cities, columns, sfd.FileName, rowBackground))
+    var pdfColumns = new List<PdfColumn>
+{
+    new() { PropertyName="ID", Header="Id", WidthInPoints=50, Alignment= TextAlignment.Left,CellForegoundFunc=(o)=>Brushes.Blue },
+    new() { PropertyName="Name", Header="Name", WidthInPoints=150, Alignment= TextAlignment.Left, CellBackgroundFunc=cellBackground, CellForegoundFunc=cellForeround },
+    new() { PropertyName="CountryCode", Header="Country code", WidthInPoints=100, Alignment= TextAlignment.Left },
+    new() { PropertyName="Population", Header="Population", WidthInPoints=100, Alignment= TextAlignment.Right, FormatString="N0" },
+    new() { PropertyName="District", Header="District", WidthInPoints=150, Alignment= TextAlignment.Left }
+};
+    if (ExportToPdfManual(Cities, pdfColumns, sfd.FileName, rowBackground))
     {
         Process.Start(new ProcessStartInfo
         {
@@ -71,7 +83,7 @@ private ParagraphAlignment getParagrphAlignment(TextAlignment alignment = TextAl
 }
 
 private MigraDoc.DocumentObjectModel.Color getMigraDocColor(System.Windows.Media.SolidColorBrush brush) => brush == null ? MigraDoc.DocumentObjectModel.Colors.Transparent : MigraDoc.DocumentObjectModel.Color.FromArgb(brush.Color.A, brush.Color.R, brush.Color.G, brush.Color.B);
-private bool ExportToPdfManual(IEnumerable<object> items, List<(string, string, double, TextAlignment, string, Func<object, SolidColorBrush>, Func<object, SolidColorBrush>)> columns, string pdfPath, Func<object, SolidColorBrush> rowBackgroundFunc = null)
+private bool ExportToPdfManual(IEnumerable<object> items, List<PdfColumn> columns, string pdfPath, Func<object, SolidColorBrush> rowBackgroundFunc = null)
 {
     try
     {
@@ -107,7 +119,7 @@ private bool ExportToPdfManual(IEnumerable<object> items, List<(string, string, 
 
         foreach (var col in columns)
         {
-            table.AddColumn(Unit.FromPoint(col.Item3));
+            table.AddColumn(Unit.FromPoint(col.WidthInPoints));
         }
 
         // Header
@@ -115,7 +127,7 @@ private bool ExportToPdfManual(IEnumerable<object> items, List<(string, string, 
         header.Shading.Color = MigraDoc.DocumentObjectModel.Colors.LightGray;
         for (int i = 0; i < columns.Count; i++)
         {
-            header.Cells[i].AddParagraph(columns[i].Item2);
+            header.Cells[i].AddParagraph(columns[i].Header);
             header.Cells[i].Format.Alignment = ParagraphAlignment.Center;
         }
         foreach (Cell cell in header.Cells)
@@ -138,32 +150,32 @@ private bool ExportToPdfManual(IEnumerable<object> items, List<(string, string, 
             for (var i = 0; i < columns.Count; i++)
             {
                 var column = columns[i];
-                var prop = item.GetType().GetProperty(columns[i].Item1);
+                var prop = item.GetType().GetProperty(columns[i].PropertyName);
                 if (prop == null) continue;
 
                 var value = prop.GetValue(item);
                 var text = value?.ToString() ?? string.Empty;
 
                 MigraDoc.DocumentObjectModel.Paragraph p;
-                if (decimal.TryParse(text, out var decValue) && !string.IsNullOrEmpty(column.Item5))
-                    p = row.Cells[i].AddParagraph(decValue.ToString(column.Item5));
-                else if (DateTime.TryParse(text, out var dateValue) && !string.IsNullOrEmpty(column.Item5))
-                    p = row.Cells[i].AddParagraph(dateValue.ToString(column.Item5));
+                if (decimal.TryParse(text, out var decValue) && !string.IsNullOrEmpty(column.FormatString))
+                    p = row.Cells[i].AddParagraph(decValue.ToString(column.FormatString));
+                else if (DateTime.TryParse(text, out var dateValue) && !string.IsNullOrEmpty(column.FormatString))
+                    p = row.Cells[i].AddParagraph(dateValue.ToString(column.FormatString));
                 else
                     p = row.Cells[i].AddParagraph(text);
 
                 // Alignment – better to set on paragraph instead of cell (more predictable)
-                p.Format.Alignment = getParagrphAlignment(column.Item4);
+                p.Format.Alignment = getParagrphAlignment(column.Alignment);
 
                 // Font color
-                p.Format.Font.Color = column.Item7 != null
-                    ? getMigraDocColor(column.Item7(item))
+                p.Format.Font.Color = column.CellForegoundFunc != null
+                    ? getMigraDocColor(column.CellForegoundFunc(item))
                     : MigraDoc.DocumentObjectModel.Colors.Black;
 
                 // Cell background – only when explicitly provided
-                if (column.Item6 != null)
+                if (column.CellBackgroundFunc != null)
                 {
-                    row.Cells[i].Shading.Color = getMigraDocColor(column.Item6(item));
+                    row.Cells[i].Shading.Color = getMigraDocColor(column.CellBackgroundFunc(item));
                 }
             }
         }
