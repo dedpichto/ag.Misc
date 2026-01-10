@@ -124,6 +124,7 @@ private bool ExportToPdfManual(IEnumerable<object> items, List<PdfColumn> column
 
         // Header
         var header = table.AddRow();
+        header.HeadingFormat = true;
         header.Shading.Color = MigraDoc.DocumentObjectModel.Colors.LightGray;
         for (int i = 0; i < columns.Count; i++)
         {
