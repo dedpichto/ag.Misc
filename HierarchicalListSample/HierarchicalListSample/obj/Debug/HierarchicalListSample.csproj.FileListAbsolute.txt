@@ -1,0 +1,17 @@
+C:\Users\andre\source\repos\HierarchicalListSample\HierarchicalListSample\bin\Debug\HierarchicalListSample.exe.config
+C:\Users\andre\source\repos\HierarchicalListSample\HierarchicalListSample\bin\Debug\HierarchicalListSample.exe
+C:\Users\andre\source\repos\HierarchicalListSample\HierarchicalListSample\bin\Debug\HierarchicalListSample.pdb
+C:\Users\andre\source\repos\HierarchicalListSample\HierarchicalListSample\obj\Debug\HierarchicalListSample.csproj.AssemblyReference.cache
+C:\Users\andre\source\repos\HierarchicalListSample\HierarchicalListSample\obj\Debug\MainWindow.g.cs
+C:\Users\andre\source\repos\HierarchicalListSample\HierarchicalListSample\obj\Debug\App.g.cs
+C:\Users\andre\source\repos\HierarchicalListSample\HierarchicalListSample\obj\Debug\HierarchicalListSample_MarkupCompile.cache
+C:\Users\andre\source\repos\HierarchicalListSample\HierarchicalListSample\obj\Debug\HierarchicalListSample_MarkupCompile.lref
+C:\Users\andre\source\repos\HierarchicalListSample\HierarchicalListSample\obj\Debug\MainWindow.baml
+C:\Users\andre\source\repos\HierarchicalListSample\HierarchicalListSample\obj\Debug\HierarchicalListSample.g.resources
+C:\Users\andre\source\repos\HierarchicalListSample\HierarchicalListSample\obj\Debug\HierarchicalListSample.Properties.Resources.resources
+C:\Users\andre\source\repos\HierarchicalListSample\HierarchicalListSample\obj\Debug\HierarchicalListSample.csproj.GenerateResource.cache
+C:\Users\andre\source\repos\HierarchicalListSample\HierarchicalListSample\obj\Debug\HierarchicalListSample.csproj.CoreCompileInputs.cache
+C:\Users\andre\source\repos\HierarchicalListSample\HierarchicalListSample\obj\Debug\HierarchicalListSample.exe
+C:\Users\andre\source\repos\HierarchicalListSample\HierarchicalListSample\obj\Debug\HierarchicalListSample.pdb
+C:\Users\andre\source\repos\HierarchicalListSample\HierarchicalListSample\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\andre\source\repos\HierarchicalListSample\HierarchicalListSample\obj\Debug\HierarchicalListSample.exe.config
