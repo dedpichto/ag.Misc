@@ -76,52 +76,41 @@
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" 
-                                          Margin="{Binding Level, Converter={StaticResource LevelToIndentConverter}}">
+                      Margin="{Binding Level, Converter={StaticResource LevelToIndentConverter}}">
 
                                     <!-- Expander Button -->
                                     <Button Content="{Binding ExpanderIcon}"
-                                            Command="{Binding DataContext.ToggleExpandCommand, 
-                                                            RelativeSource={RelativeSource AncestorType=ListView}}"
-                                            CommandParameter="{Binding}"
-                                            Style="{StaticResource ExpanderButtonStyle}"
-                                            Visibility="{Binding HasChildren, 
-                                                               Converter={StaticResource BoolToVisConverter}}"
-                                            Width="16"
-                                            Height="16"/>
+                        Command="{Binding DataContext.ToggleExpandCommand, 
+                                        RelativeSource={RelativeSource AncestorType=ListView}}"
+                        CommandParameter="{Binding}"
+                        Style="{StaticResource ExpanderButtonStyle}"
+                        Visibility="{Binding HasChildren, 
+                                           Converter={StaticResource BoolToVisConverter}}"
+                        Width="16"
+                        Height="16"/>
 
                                     <!-- Spacer for nodes without children -->
                                     <Border Width="16" 
-                                            Visibility="{Binding HasChildren, 
-                                                               Converter={StaticResource BoolToVisConverter}, 
-                                                               ConverterParameter=Inverted}"/>
+                        Visibility="{Binding HasChildren, 
+                                           Converter={StaticResource BoolToVisConverter}, 
+                                           ConverterParameter=Inverted}"/>
 
-                                    <!-- Checkbox -->
-                                    <CheckBox IsChecked="{Binding IsChecked}" 
-                                            Margin="5,0"
-                                            VerticalAlignment="Center"/>
+                                    <!-- Three-State Checkbox -->
+                                    <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                          IsThreeState="False"
+                          Margin="5,0"
+                          VerticalAlignment="Center"/>
 
-                                    <!-- Icon (optional) -->
+                                    <!-- Icon -->
                                     <Image Source="{Binding ImagePath}" 
-                                           Width="16" 
-                                           Height="16" 
-                                           Margin="0,0,5,0"
-                                           VerticalAlignment="Center">
-                                        <Image.Style>
-                                            <Style TargetType="Image">
-                                                <Style.Triggers>
-                                                    <Trigger Property="Source" Value="{x:Null}">
-                                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Image.Style>
-                                    </Image>
+                       Width="16" 
+                       Height="16" 
+                       Margin="0,0,5,0"
+                       VerticalAlignment="Center"/>
 
                                     <!-- Name Text -->
                                     <TextBlock Text="{Binding Name}" 
-                                             VerticalAlignment="Center"
-                                             FontWeight="{Binding HasChildren, 
-                                                                Converter={StaticResource BoolToFontWeightConverter}}"/>
+                         VerticalAlignment="Center"/>
                                 </StackPanel>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>

@@ -100,48 +100,58 @@ namespace HierarchicalListSample
             {
                 Name = "Project 1",
                 Description = "Main project",
-                ImagePath = "/Images/folder.png",
-                IsChecked = true
+                ImagePath = "/Images/folder.png"
             };
 
             var child1 = new TreeListNode(root1)
             {
                 Name = "Module A",
-                Description = "Core module",
-                ImagePath = "/Images/file.png",
-                IsChecked = false
+                Description = "Core module"
             };
 
             var child2 = new TreeListNode(root1)
             {
                 Name = "Module B",
-                Description = "Secondary module",
-                ImagePath = "/Images/file.png",
-                IsChecked = true
+                Description = "Secondary module"
             };
 
             var subChild1 = new TreeListNode(child2)
             {
                 Name = "Component 1",
-                Description = "Sub-component",
-                ImagePath = "/Images/component.png",
-                IsChecked = false
+                Description = "Sub-component"
+            };
+
+            var subChild2 = new TreeListNode(child2)
+            {
+                Name = "Component 2",
+                Description = "Another sub-component"
             };
 
             child2.Children.Add(subChild1);
+            child2.Children.Add(subChild2);
             root1.Children.Add(child1);
             root1.Children.Add(child2);
 
             var root2 = new TreeListNode
             {
                 Name = "Project 2",
-                Description = "Secondary project",
-                ImagePath = "/Images/folder.png",
-                IsChecked = false
+                Description = "Secondary project"
             };
 
-            RootNodes.Add(root1);
-            RootNodes.Add(root2);
+            var root2Child1 = new TreeListNode(root2) { Name = "Item 1" };
+            var root2Child2 = new TreeListNode(root2) { Name = "Item 2" };
+            var root2Child3 = new TreeListNode(root2) { Name = "Item 3" };
+
+            root2.Children.Add(root2Child1);
+            root2.Children.Add(root2Child2);
+            root2.Children.Add(root2Child3);
+
+            _rootNodes.Add(root1);
+            _rootNodes.Add(root2);
+
+            // Set initial states to test propagation
+            subChild1.IsChecked = true;  // This will make parent indeterminate
+            root2.IsChecked = true;      // This will check all root2 children
 
             RebuildFlattenedList();
         }
